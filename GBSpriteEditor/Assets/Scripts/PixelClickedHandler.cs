@@ -18,7 +18,11 @@ public class PixelClickedHandler : MonoBehaviour
     } 
 
     public void ChangePixelColor() {
-        GetComponent<Image>().color = editorState.activePaletteColor;
+        //ignore clicks when in settings
+        if (!editorState.inSettings)
+        {
+            GetComponent<Image>().color = editorState.activePaletteColor;
+        }
     }
 
 }
