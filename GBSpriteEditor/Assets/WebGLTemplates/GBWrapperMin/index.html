@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBSpriteEditor</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <!-- grab VT323 font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <!-- grab open sans font -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"> 
+</head>
+<body>
+  
+    <div class="container">
+
+        <!-- main navbar, for screen sizes large than ~640 -->
+        <nav id="main-navbar"> 
+            <a class="fancy-pink" href="./index.html">GBDevKit</a>
+            <a href="./index.html">Setup</a>
+            <a href="./0_hello_world.html">0_hello_world</a>
+            <a href="./1_gameboy_graphics.html">1_gameboy_graphics</a>
+            <a class="fancy-purple" href="./sprite_editor.html">Sprite Editor</a>
+            <header class="doc-title-text">Getting Started - Overview of Gameboy Development</header>
+        </nav>
+        
+        <!-- mobile navbar, initially hidden -->
+        <nav id="mobile-main-navbar"> 
+            <a class="fancy-pink" href="./index.html">GBDevKit</a>
+            <a href="./index.html">Setup</a>
+            <a href="./0_hello_world.html">0_hello</a>
+            <a href="./1_gameboy_graphics.html">1_graphics</a>
+            <a class="fancy-purple" href="./sprite_editor.html">Editor</a>
+            <header class="doc-title-text">Getting Started - Overview of Gameboy Development</header>
+        </nav>
+        
+        <div id="toc-navbar">
+            <nav>
+                <a href="#section-what-is-this-site">What is this Site?</a>
+                <a href="#section-getting-the-tools">Getting the Tools</a>
+                <a href="#section-test-build">Test Build to Verify Installation</a>
+            </nav>
+        </div>
+
+        <!-- grid column rightmost 2/3  -->
+        <main id="article">
+            <article>
+                <section id="canvas-container">
+                    <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
+                    <script src="Build/{{{ LOADER_FILENAME }}}"></script>
+                    <script>
+                    /**
+                     * Unity script to attach canvas/webgl build.
+                     */
+                    createUnityInstance(document.querySelector("#unity-canvas"), {
+                        dataUrl: "Build/{{{ DATA_FILENAME }}}",
+                        frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
+                        codeUrl: "Build/{{{ CODE_FILENAME }}}",
+#if MEMORY_FILENAME
+                        memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+                        symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
+#endif
+                        streamingAssetsUrl: "StreamingAssets",
+                        companyName: "{{{ COMPANY_NAME }}}",
+                        productName: "{{{ PRODUCT_NAME }}}",
+                        productVersion: "{{{ PRODUCT_VERSION }}}",
+                        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+                        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+                    });
+                    </script>
+                </section>
+            </article>
+
+        </main>
+
+    </div>
+
+</body>
+</html>
