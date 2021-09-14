@@ -1,85 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GBSpriteEditor</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/gbspriteeditor.css">
     <link rel="icon" type="image/png" href="favicon.png" />
     <!-- grab VT323 font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <!-- grab open sans font -->
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 </head>
+
 <body>
-  
+
     <div class="container">
 
-        <!-- main navbar, for screen sizes large than ~640 -->
-        <nav id="main-navbar"> 
-            <a class="fancy-pink" href="./index.html">GBDevKit</a>
-            <a href="./index.html">Setup</a>
-            <a href="./0_hello_world.html">0_hello_world</a>
-            <a href="./1_gameboy_graphics.html">1_gameboy_graphics</a>
-            <a class="fancy-purple" href="./sprite_editor.html">Sprite Editor</a>
-            <header class="doc-title-text">Getting Started - Overview of Gameboy Development</header>
+        <nav id="main-navbar">
+            <a class="fancy-pink" href="./index.html">GBSpriteEditor</a>
+            <header class="doc-title-text">GBSpriteEditor</header>
         </nav>
-        
-        <!-- mobile navbar, initially hidden -->
-        <nav id="mobile-main-navbar"> 
-            <a class="fancy-pink" href="./index.html">GBDevKit</a>
-            <a href="./index.html">Setup</a>
-            <a href="./0_hello_world.html">0_hello</a>
-            <a href="./1_gameboy_graphics.html">1_graphics</a>
-            <a class="fancy-purple" href="./sprite_editor.html">Editor</a>
-            <header class="doc-title-text">Getting Started - Overview of Gameboy Development</header>
-        </nav>
-        
-        <div id="toc-navbar">
-            <nav>
-                <a href="#section-what-is-this-site">What is this Site?</a>
-                <a href="#section-getting-the-tools">Getting the Tools</a>
-                <a href="#section-test-build">Test Build to Verify Installation</a>
-            </nav>
+
+        <div id="tools-left-container">
+            <div id="about" class="shadow">
+                <h2 class="magentify">About</h2>
+                <p>GBSpriteEditor was an experiment in working with Unity from JavaScript. The export/tools settings
+                    control
+                    aspects of the WebGL exported scene (the computer). If your curious about the sprite editor and
+                    what's
+                    happening in Unity checkout the repo at: <a target="_blank"
+                        href="https://github.com/werkn/gbspriteeditor">github.com/werkn/gbspriteeditor</a></p>
+            </div>
+
+            <div id="palette-settings" class="shadow">
+                <h2>Palette Settings</h2>
+                <div class="pallete-tool-container">
+                    <label for="palette0">Color 0</label>
+                    <input type="color" name="palett0" id="palette0">
+                    <label for="palette1">Color 1</label>
+                    <input type="color" name="palette1" id="palette1">
+                    <label for="palette2">Color 2</label>
+                    <input type="color" name="palette2" id="palette2">
+                    <label for="palette3">Color 3</label>
+                    <input type="color" name="palette3" id="palette3">
+
+                    <button class="boxy-button grid-fill-horiz">Import Palette (JSON)</button>
+                    <button class="boxy-button grid-fill-horiz">Copy Palette (JSON)</button>
+                </div>
+            </div>
         </div>
 
-        <!-- grid column rightmost 2/3  -->
+        <div id="tools-right-container">
+            <div id="sprite-settings" class="shadow">
+                <h2 class="orangify">Settings</h2>
+                <div class="settings-tool-container">
+                    <button class="boxy-button">Copy Sprite (JSON)</button>
+                    <button class="boxy-button">Copy Sprite (ASM)</button>
+                    <table class="sprite-data-table grid-fill-horiz">
+                        <thead>
+                            <th>Byte 0</th>
+                            <th>Byte 1</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>FF</td>
+                                <td>FF</td>
+                            </tr>
+                            <tr>
+                                <td>FF</td>
+                                <td>FF</td>
+                            </tr>
+                            <tr>
+                                <td>FF</td>
+                                <td>FF</td>
+                            </tr>
+                            <tr>
+                                <td>FF</td>
+                                <td>FF</td>
+                            </tr>
+                            <tr>
+                                <td>FF</td>
+                                <td>FF</td>
+                            </tr>
+                            <tr>
+                                <td>FF</td>
+                                <td>FF</td>
+                            </tr>
+                            <tr>
+                                <td>FF</td>
+                                <td>FF</td>
+                            </tr>
+                            <tr>
+                                <td>FF</td>
+                                <td>FF</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="boxy-button">Reset Sprite</button>
+                </div>
+            </div>
+        </div>
+
+        <section id="canvas-container">
+
+            <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}}
+                style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
+            <script src="Build/{{{ LOADER_FILENAME }}}"></script>
+
+            <script>
+                //Unity script to attach canvas/webgl build.
+
+                createUnityInstance(document.querySelector("#unity-canvas"), {
+                    dataUrl: "Build/{{{ DATA_FILENAME }}}",
+                    frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
+                    codeUrl: "Build/{{{ CODE_FILENAME }}}",
+                    #if MEMORY_FILENAME
+                    memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
+                    #endif
+    #if SYMBOLS_FILENAME
+                    symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
+                    #endif
+                    streamingAssetsUrl: "StreamingAssets",
+                    companyName: "{{{ COMPANY_NAME }}}",
+                    productName: "{{{ PRODUCT_NAME }}}",
+                    productVersion: "{{{ PRODUCT_VERSION }}}",
+                    // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+                    // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+                });
+
+            </script>
+        </section>
+
         <main id="article">
             <article>
-                <section id="canvas-container">
-                    <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
-                    <script src="Build/{{{ LOADER_FILENAME }}}"></script>
-                    <script>
-                    /**
-                     * Unity script to attach canvas/webgl build.
-                     */
-                    createUnityInstance(document.querySelector("#unity-canvas"), {
-                        dataUrl: "Build/{{{ DATA_FILENAME }}}",
-                        frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
-                        codeUrl: "Build/{{{ CODE_FILENAME }}}",
-#if MEMORY_FILENAME
-                        memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
-#endif
-#if SYMBOLS_FILENAME
-                        symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
-#endif
-                        streamingAssetsUrl: "StreamingAssets",
-                        companyName: "{{{ COMPANY_NAME }}}",
-                        productName: "{{{ PRODUCT_NAME }}}",
-                        productVersion: "{{{ PRODUCT_VERSION }}}",
-                        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-                        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-                    });
-                    </script>
+                <section id="overview-of-2bpp">
+                    <h2>Overview of 2BPP Graphics</h2>
+                    <p>The original Gameboy provided support for 4 colors (shades of grey/green) and this format/color
+                        depth is referred to as 2BPP or 2 bits per pixel.</p>
+                    <p>This means that we use 2 bits for each pixel with possible values (DEC: 0,1,2,3 / BIN: 0b00,
+                        0b01, 0b10, 0b11) as indexes into a palette that are used to color pixels on the screen.</p>
+                    <p>If you want to try running the export graphics on your own GameBoy checkout my quick start guide
+                        found at: <a href="https://github.com/werkn/gbdevkit">github.com/werkn/gbdevkit</a>.</p>
+                    <p>We outline 2BPP in the video below.</p>
+                </section>
+
+                <section id="video-overview">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/6faA00CvFhI?start=4"
+                        title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+                </section>
+
+                <section id="overview-of-2bpp-cont">
+                    <p>To recap, the GB uses the conventional Game Boy 2BPP tile format. 2BPP essentially stand for 2
+                        Bits Per Pixel, which effectively means the color (or more correctly four shades of grey/green)
+                        at each pixel in a 2BPP image can have four possible values (0,1,2,3).</p>
+                    <p>In binary we find the equivalent values are:</p>
+
+                    <table>
+                        <thead>
+                            <th>DECIMAL</th>
+                            <th>BINARY</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0</td>
+                                <td>0b00</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>0b01</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>0b10</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>0b11</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p>Under the Game Boy system a pallette is associated with each value (0, 1, 2, 3) with a shade of gray (original Game Boy) or a color (Game Boy Color). Above you can change the palette but this is fixed on the GB.</p>
+                    <p>The Game Boy doesn't work with pixels due to the processing implications but instead works with tiles. Where each tile is 8x8 pixels (or 8x16 but we're just going to focus on 8x8 mode). The 8x8 tile is composed of 16 bytes or 8 rows of 2 bytes.</p>
+                    <p>Where,</p>
+                    <p>1 byte = 8 bits, so 2 bytes is a 16 bit value which is represented as 4 x hexadecimal numbers (HEX: FFFF / BIN: 0000 0000 0000 0000).</p>
+                    <p>So the top row in a tile ends up looking like this in binary:</p>
+
+                    <div>    
+                        <p>[ 00 00 00 00 00 00 00 00 ]</p>
+                        <p>... + 7 more rows like the one above</p>
+                    </div>
+
+                    <p>The above line would produce whatever color is set for value 0 (00) set for the every pixel in the top row. Basically a line.</p>
+                    <p>Seems simple right!  But wait.. the GameBoy actually packs the index for each pixel across two bytes.  It does this by taking palette index (00,01, etc...) and taking the the MSB (Most significant bit/leftmost) and packing it into its index in first most byte, and then taking the LSB (Least significant byte/rightmost) and packing it in the index of the second byte.  If your like me your very confused right now so checkout the video above (if you haven't already for a more detailed explanation).</p>
+                </section>
+                <section>
+                    <h2>Other Tools</h2>
+                    <p>While you could use GBSpriteEditor to create graphics for a real GameBoy game it is more suited as a teaching/tinkering tool.</p>
+                    <p>For ease of use and its ability to export tilemaps and graphics I'd recommend <a href="https://github.com/gbdk-2020/GBTD_GBMB">Game Boy Tile Designer</a>.  There are several versions floating around but I believe this one is patched for modern systems.</p>
                 </section>
             </article>
-
+            
         </main>
 
     </div>
 
 </body>
+
 </html>
