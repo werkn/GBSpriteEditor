@@ -56,6 +56,11 @@ img {
     margin-right: auto;
 }
 
+footer {
+    text-align: center;
+    color: var(--dos-white);
+}
+
 .shadow {
     background-color: var(--dos-gray1);
     box-shadow: 8px 8px 0px var(--dos-black);
@@ -90,47 +95,100 @@ img {
 
 /* START GRID SETUP */
 
-
 /* grid container */
 .container {
     background-color: var(--dos-bg);
     width: 100%;
     margin: 0 auto;
     display: grid;
-    /* exported webgl container is set for 480x640 so 480 is our min here*/
-    grid-template-columns: 1fr minmax(480px, 1fr) 1fr;
-    grid-template-rows: auto auto auto;
-}
-
-#article {
-    grid-column: -1/1;
-    margin: 0 auto;
-    width: 80%;
+    /* exported webgl container is set for 480x640 so 480 is our min height here*/
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(480px, auto) auto auto auto;
 }
 
 #main-navbar {
     display: initial;
     background: var(--dos-bg);
     grid-column: -1/1;
+    grid-row-start: 1;
 }
 
 #tools-left-container {
     padding: 0.5em;
-    grid-column-start: 1;
+    grid-column: 1/-1;
+    grid-row-start: 3;
 }
-
 
 #canvas-container {
     margin: 0 auto;
-    grid-column-start: 2;
+    grid-column: -1/1;
     grid-row-start: 2;
     padding: 2em;
 }
 
 #tools-right-container {
     padding: 0.5em;
-    grid-column-start: 3;
+    grid-row-start: 4;
 }
+
+#footer-container {
+    grid-column: -1/1;
+    grid-row-start: 5;
+}
+
+/* still small but not that small */
+@media (min-width: 724px) and (max-width: 960px) {
+    .container {
+        grid-template-columns: 1fr minmax(480px, 1fr);
+        /* header/[tools-left-container & canvas]/tools-right-container/footer */
+        grid-template-rows: auto minmax(480px, auto) auto auto;
+    }
+
+    #tools-right-container {
+        grid-column: -1/1;
+        grid-row-start: 3;
+    }
+
+    #tools-left-container {
+        grid-column: 1/2;
+        grid-row-start: 2;
+    }
+
+    #canvas-container {
+        grid-column: 2/3;
+        grid-row-start: 2;
+    }
+}
+
+/* tablets/desktop */
+@media (min-width: 961px) {
+    .container {
+        grid-template-columns: 1fr minmax(480px, 1fr) 1fr;
+        grid-template-rows: auto minmax(480px, auto) auto;
+    }
+
+    #tools-right-container {
+        grid-column-start: 3;
+        grid-row-start: 2;
+    }
+
+    #tools-left-container {
+        grid-column: 1/2;
+        grid-row-start: 2;
+    }
+
+    #canvas-container {
+        grid-column: 2/3;
+        grid-row-start: 2;
+    }
+}
+
+/* here be monsters' */
+@media (min-width: 1081px) {
+    .container {
+        width: 85%;
+    }
+} 
 
 
 /* END GRID SETUP */
@@ -194,7 +252,13 @@ tr:nth-child(even) {
 
 .pallete-tool-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+}
+
+.palette-color-inputs-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .grid-fill-horiz {
