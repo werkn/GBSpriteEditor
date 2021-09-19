@@ -10,9 +10,6 @@ public class Sprite2BPP : MonoBehaviour
     * NOTE:  Cannot serialize getters/setters using the JsonUtility, basic public fields
     * work though.
     */
-    //public bool[] flags;
-
-    //public string[] spriteRowsAsHex;
 
     public GameObject row0_px0;
     public GameObject row1_px0;

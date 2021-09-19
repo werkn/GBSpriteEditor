@@ -55,40 +55,40 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>FF</td>
-                                <td>FF</td>
+                                <td id="row0_byte0">FF</td>
+                                <td id="row0_byte1">FF</td>
                             </tr>
                             <tr>
-                                <td>FF</td>
-                                <td>FF</td>
+                                <td id="row1_byte0">FF</td>
+                                <td id="row1_byte1">FF</td>
                             </tr>
                             <tr>
-                                <td>FF</td>
-                                <td>FF</td>
+                                <td id="row2_byte0">FF</td>
+                                <td id="row2_byte1">FF</td>
                             </tr>
                             <tr>
-                                <td>FF</td>
-                                <td>FF</td>
+                                <td id="row3_byte0">FF</td>
+                                <td id="row3_byte1">FF</td>
                             </tr>
                             <tr>
-                                <td>FF</td>
-                                <td>FF</td>
+                                <td id="row4_byte0">FF</td>
+                                <td id="row4_byte1">FF</td>
                             </tr>
                             <tr>
-                                <td>FF</td>
-                                <td>FF</td>
+                                <td id="row5_byte0">FF</td>
+                                <td id="row5_byte1">FF</td>
                             </tr>
                             <tr>
-                                <td>FF</td>
-                                <td>FF</td>
+                                <td id="row6_byte0">FF</td>
+                                <td id="row6_byte1">FF</td>
                             </tr>
                             <tr>
-                                <td>FF</td>
-                                <td>FF</td>
+                                <td id="row7_byte0">FF</td>
+                                <td id="row7_byte1">FF</td>
                             </tr>
                         </tbody>
                     </table>
-                    <button class="boxy-button">Reset Sprite</button>
+                    <button onclick="unityInstance.SendMessage('State', 'ResetSprite')" class="boxy-button">Reset Sprite</button>
                 </div>
             </div>
             
@@ -114,8 +114,24 @@
             <script src="Build/{{{ LOADER_FILENAME }}}"></script>
 
             <script>
-                //Unity script to attach canvas/webgl build.
+                //we have (under Plugins/browser_interop.jslib) a function that fires everytime we 
+                //update sprite data, this method captures that and updates our local table of sprite
+                //data 
+                let syncSpriteData = (spriteAsString) => {
+                    //spriteAsString is sent from our Unity script as space seperated values
+                    //so it looks like "FF FF FF ... FF"
+                    let spriteRows = spriteAsString.split(" ");
 
+                    //grab table and update sprite data per byte, per row
+                    for(let row = 0, currentByte = 0; row < 8; row++, currentByte+=2) {
+                        //console.log(spriteRows[row]);
+                        document.getElementById("row"+row+"_byte0").innerText = spriteRows[currentByte];
+                        document.getElementById("row"+row+"_byte1").innerText = spriteRows[currentByte+1];
+                    }
+
+                }
+
+                //Unity script to attach canvas/webgl build.
                 createUnityInstance(document.querySelector("#unity-canvas"), {
                     dataUrl: "Build/{{{ DATA_FILENAME }}}",
                     frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
@@ -132,7 +148,32 @@
                     productVersion: "{{{ PRODUCT_VERSION }}}",
                     // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
                     // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+                }, 
+                (progress) => { /* do nothing but don't instant until done loading*/ }).then((unityInstance) => {
+                    window.unityInstance = unityInstance; //add unityInstance so we can access it
                 });
+
+                //grab palette color controls
+                let palette0 = document.getElementById("palette0");
+                let palette1 = document.getElementById("palette1");
+                let palette2 = document.getElementById("palette2");
+                let palette3 = document.getElementById("palette3");
+
+
+                //send palette updates into the Unity app
+                let syncBrowserPalette = () => {
+                    unityInstance.SendMessage("State", "SyncBrowserPalette",
+                    document.getElementById("palette0").value + "," +
+                    document.getElementById("palette1").value + "," +
+                    document.getElementById("palette2").value + "," +
+                    document.getElementById("palette3").value);
+                }
+
+                //add callbacks to sync canvas changes
+                palette0.onchange = () => { syncBrowserPalette(); }
+                palette1.onchange = () => { syncBrowserPalette(); }
+                palette2.onchange = () => { syncBrowserPalette(); }
+                palette3.onchange = () => { syncBrowserPalette(); }
 
             </script>
         </section>
