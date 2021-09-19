@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
+
 public enum ACTIVE_TOOL {
     PENCIL
 }
@@ -107,7 +106,7 @@ public class SpriteEditorState : MonoBehaviour
                     "#" + ColorUtility.ToHtmlStringRGB(palette1.color),
                     "#" + ColorUtility.ToHtmlStringRGB(palette2.color),
                     "#" + ColorUtility.ToHtmlStringRGB(palette3.color));
-#endif
+            #endif
 
 
             //reset all pixels in pixel panel and reset active palette index

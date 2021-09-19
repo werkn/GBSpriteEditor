@@ -46,8 +46,8 @@
             <div id="sprite-settings" class="shadow">
                 <h2 class="orangify">Settings</h2>
                 <div class="settings-tool-container">
-                    <button class="boxy-button">Copy Sprite (JSON)</button>
-                    <button class="boxy-button">Copy Sprite (ASM)</button>
+                    <button id="copyJSONButton" class="boxy-button">Copy Sprite (JSON)</button>
+                    <button id="copyASMButton" class="boxy-button">Copy Sprite (ASM)</button>
                     <table class="sprite-data-table grid-fill-horiz">
                         <thead>
                             <th>Byte 0</th>
@@ -88,7 +88,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <button onclick="unityInstance.SendMessage('State', 'ResetSprite')" class="boxy-button">Reset Sprite</button>
+                    <button id="resetSpriteButton" class="boxy-button">Reset Sprite</button>
                 </div>
             </div>
             
@@ -106,18 +106,25 @@
                         href="https://github.com/werkn/gbspriteeditor">github.com/werkn/gbspriteeditor</a></p>
             </div>
         </div>
-
+        
         <section id="canvas-container">
-
+            
             <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}}
-                style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
+            style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
             <script src="Build/{{{ LOADER_FILENAME }}}"></script>
-
+            
             <script>
+                let gbeditor = {};
+                gbeditor.defaultSpriteAsString = "FF 00 FF 00 FF 00 FF 00 FF 00 FF 00 FF 00 FF 00"; 
+                gbeditor.spriteAsString = gbeditor.defaultSpriteAsString;
+
                 //we have (under Plugins/browser_interop.jslib) a function that fires everytime we 
                 //update sprite data, this method captures that and updates our local table of sprite
                 //data 
                 let syncSpriteData = (spriteAsString) => {
+                    //update spriteAsString
+                    gbeditor.spriteAsString = spriteAsString;
+                    
                     //spriteAsString is sent from our Unity script as space seperated values
                     //so it looks like "FF FF FF ... FF"
                     let spriteRows = spriteAsString.split(" ");
@@ -153,27 +160,67 @@
                     window.unityInstance = unityInstance; //add unityInstance so we can access it
                 });
 
-                //grab palette color controls
-                let palette0 = document.getElementById("palette0");
-                let palette1 = document.getElementById("palette1");
-                let palette2 = document.getElementById("palette2");
-                let palette3 = document.getElementById("palette3");
 
+                gbeditor.copyToClipboard = (text) => {
+                    window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
+                }
+
+                //grab palette color controls
+                gbeditor.palette0 = document.getElementById("palette0");
+                gbeditor.palette1 = document.getElementById("palette1");
+                gbeditor.palette2 = document.getElementById("palette2");
+                gbeditor.palette3 = document.getElementById("palette3");
+    
+                //add button references
+                gbeditor.copyPaletteJSONButton = document.getElementById("copyJSONButton");
+                gbeditor.copyPaletteASMButton = document.getElementById("copyASMButton");
+                gbeditor.resetSpriteButton = document.getElementById("resetSpriteButton");
 
                 //send palette updates into the Unity app
-                let syncBrowserPalette = () => {
+                gbeditor.syncBrowserPalette = () => {
                     unityInstance.SendMessage("State", "SyncBrowserPalette",
                     document.getElementById("palette0").value + "," +
                     document.getElementById("palette1").value + "," +
                     document.getElementById("palette2").value + "," +
                     document.getElementById("palette3").value);
                 }
-
+                
                 //add callbacks to sync canvas changes
-                palette0.onchange = () => { syncBrowserPalette(); }
-                palette1.onchange = () => { syncBrowserPalette(); }
-                palette2.onchange = () => { syncBrowserPalette(); }
-                palette3.onchange = () => { syncBrowserPalette(); }
+                gbeditor.palette0.onchange = () => { gbeditor.syncBrowserPalette(); }
+                gbeditor.palette1.onchange = () => { gbeditor.syncBrowserPalette(); }
+                gbeditor.palette2.onchange = () => { gbeditor.syncBrowserPalette(); }
+                gbeditor.palette3.onchange = () => { gbeditor.syncBrowserPalette(); }
+
+                //add button callbacks
+                gbeditor.copyPaletteJSONButton.onclick = () => {
+                    gbeditor.copyToClipboard(JSON.stringify({"sprite": gbeditor.spriteAsString}));
+                }
+                
+                gbeditor.copyPaletteASMButton.onclick = () => {
+                    //convert to ASM db format
+                    let spriteAsASM = "db " + gbeditor.spriteAsString.split(" ").map((currentValue, index, arr) => {
+                        if (index < arr.length-1) {
+                            //group output of bytes in twos
+                            if (index % 2 == 0) {
+                                return `$${currentValue},`
+                            } else {
+                                return `$${currentValue}, `
+                            }
+                        } else { 
+                            //don't append , on last value
+                            return `$${currentValue}`
+                        }
+                    }).join('');
+                    gbeditor.copyToClipboard(spriteAsASM);
+                }
+
+                gbeditor.resetSpriteButton.onclick = () => {
+                    unityInstance.SendMessage('State', 'ResetSprite'); 
+                    //reset spriteAsString
+                    gbeditor.spriteAsString = gbeditor.defaultSpriteAsString; 
+                    //reset table
+                    syncSpriteData(gbeditor.defaultSpriteAsString);
+                }
 
             </script>
         </section>
