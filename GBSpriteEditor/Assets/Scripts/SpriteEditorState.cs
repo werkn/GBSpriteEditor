@@ -24,7 +24,7 @@ public class SpriteEditorState : MonoBehaviour
     public Color activePaletteColor;
     public ACTIVE_TOOL activeTool;
     public bool inSettings = false;
-    
+
     public void ResetSprite()
     {
         Image[] imageRefs = pixelPanel.GetComponentsInChildren<Image>();

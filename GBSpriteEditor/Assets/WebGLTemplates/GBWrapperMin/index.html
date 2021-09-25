@@ -39,8 +39,7 @@
                         <input type="color" name="palette3" id="palette3">
                     </div>
 
-                    <button class="boxy-button grid-fill-horiz">Import Palette (JSON)</button>
-                    <button class="boxy-button grid-fill-horiz">Copy Palette (JSON)</button>
+                    <button id="exportPaletteButton" class="boxy-button grid-fill-horiz">Copy Palette (JSON)</button>
                 </div>
             </div>
             <div id="sprite-settings" class="shadow">
@@ -172,6 +171,7 @@
                 gbeditor.palette3 = document.getElementById("palette3");
     
                 //add button references
+                gbeditor.exportPaletteButton = document.getElementById("exportPaletteButton");
                 gbeditor.copyPaletteJSONButton = document.getElementById("copyJSONButton");
                 gbeditor.copyPaletteASMButton = document.getElementById("copyASMButton");
                 gbeditor.resetSpriteButton = document.getElementById("resetSpriteButton");
@@ -192,10 +192,21 @@
                 gbeditor.palette3.onchange = () => { gbeditor.syncBrowserPalette(); }
 
                 //add button callbacks
+                gbeditor.exportPaletteButton.onclick = () => {
+                    gbeditor.copyToClipboard(JSON.stringify(
+                        {
+                            'palette0': gbeditor.palette0.value,
+                            'palette1': gbeditor.palette1.value,
+                            'palette2': gbeditor.palette2.value,
+                            'palette3': gbeditor.palette3.value
+                        }
+                    ));
+                }
+                
                 gbeditor.copyPaletteJSONButton.onclick = () => {
                     gbeditor.copyToClipboard(JSON.stringify({"sprite": gbeditor.spriteAsString}));
                 }
-                
+
                 gbeditor.copyPaletteASMButton.onclick = () => {
                     //convert to ASM db format
                     let spriteAsASM = "db " + gbeditor.spriteAsString.split(" ").map((currentValue, index, arr) => {
