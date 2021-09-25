@@ -1,0 +1,270 @@
+:root {
+    --dos-bg: #1a1a1a;
+    --dos-magenta: #ff00ff;
+    --dos-gray1: #666666;
+    --dos-gray2: #aaaaaa;
+    --dos-gray3: #cccccc;
+    --dos-blue1: #0000cc;
+    --dos-blue2: #009999;
+    --dos-black: #000000;
+    --dos-white: #ffffff;
+    --dos-yellow: #e5ff00;
+    --dos-purple: #7f00ff;
+    --dos-orange: #ff9933;
+}
+
+body {
+    font-family: 'VT323', Consolas, "Courier New", monospace;
+    font-size: 18px;
+    background-color: var(--dos-bg);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    padding: 0.6em;
+    font-size: 1.1em;
+    font-weight: 400;
+    color: var(--dos-black);
+    background-color: var(--dos-blue2);
+    text-align: center;
+}
+
+p {
+    padding: 0.6em;
+    font-size: 0.9em;
+    color: var(--dos-white);
+    font-family: 'Open Sans', sans-serif;
+}
+
+a {
+    color: var(--dos-yellow);
+}
+
+a:hover {
+    color: var(--dos-yellow);
+    text-decoration: underline dashed;
+}
+
+/* we center all images in their parent container/div/etc...*/
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+footer {
+    text-align: center;
+    color: var(--dos-white);
+}
+
+.shadow {
+    background-color: var(--dos-gray1);
+    box-shadow: 8px 8px 0px var(--dos-black);
+}
+
+.boxy-button {
+    padding: 0.5em 0.3em;
+    margin: 0.3em auto;
+    width: 80%;
+    font-family: 'VT323', Consolas, "Courier New", monospace;
+    font-size: 1em;
+    /* align: center; */
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    color: var(--dos-black);
+    background-color: var(--dos-white);
+    /* border: 1px solid var(--dos-black); */
+    box-shadow: 0.2em 0.2em var(--dos-black);
+}
+
+.boxy-button:hover {
+    background-color: var(--dos-gray1);
+    color: var(--dos-white);
+}
+
+.boxy-button:active {
+    background-color: var(--dos-gray1);
+    box-shadow: 0.2em 0.2em var(--dos-black);
+    transform: translateY(0.2em);
+}
+
+/* START GRID SETUP */
+
+/* grid container */
+.container {
+    background-color: var(--dos-bg);
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    /* exported webgl container is set for 480x640 so 480 is our min height here*/
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(480px, auto) auto auto auto;
+}
+
+#main-navbar {
+    display: initial;
+    background: var(--dos-bg);
+    grid-column: -1/1;
+    grid-row-start: 1;
+}
+
+#tools-left-container {
+    padding: 0.5em;
+    grid-column: 1/-1;
+    grid-row-start: 3;
+}
+
+#canvas-container {
+    margin: 0 auto;
+    grid-column: -1/1;
+    grid-row-start: 2;
+    padding: 2em;
+}
+
+#tools-right-container {
+    padding: 0.5em;
+    grid-row-start: 4;
+}
+
+#footer-container {
+    grid-column: -1/1;
+    grid-row-start: 5;
+}
+
+/* still small but not that small */
+@media (min-width: 724px) and (max-width: 960px) {
+    .container {
+        grid-template-columns: 1fr minmax(480px, 1fr);
+        /* header/[tools-left-container & canvas]/tools-right-container/footer */
+        grid-template-rows: auto minmax(480px, auto) auto auto;
+    }
+
+    #tools-right-container {
+        grid-column: -1/1;
+        grid-row-start: 3;
+    }
+
+    #tools-left-container {
+        grid-column: 1/2;
+        grid-row-start: 2;
+    }
+
+    #canvas-container {
+        grid-column: 2/3;
+        grid-row-start: 2;
+    }
+}
+
+/* tablets/desktop */
+@media (min-width: 961px) {
+    .container {
+        grid-template-columns: 1fr minmax(480px, 1fr) 1fr;
+        grid-template-rows: auto minmax(480px, auto) auto;
+    }
+
+    #tools-right-container {
+        grid-column-start: 3;
+        grid-row-start: 2;
+    }
+
+    #tools-left-container {
+        grid-column: 1/2;
+        grid-row-start: 2;
+    }
+
+    #canvas-container {
+        grid-column: 2/3;
+        grid-row-start: 2;
+    }
+}
+
+/* here be monsters' */
+@media (min-width: 1081px) {
+    .container {
+        width: 85%;
+    }
+} 
+
+
+/* END GRID SETUP */
+
+.doc-title-text {
+    color: var(--dos-white);
+    border: 1px solid var(--dos-white);
+    padding: 0.6em 0.6em 0.6em 0.6em;
+    background: var(--dos-blue1);
+}
+
+.fancy-pink {
+    /* blast away color and replace with magenta */
+    color: var(--dos-magenta) !important;
+}
+
+.fancy-purple {
+    /* blast away color and replace with magenta */
+    color: var(--dos-purple) !important;
+    float: right;
+}
+
+.magentify {
+    background-color: var(--dos-magenta);
+}
+
+.purpilify {
+    background-color: var(--dos-purple);
+}
+
+.orangify {
+    background-color: var(--dos-orange);
+}
+
+.border {
+    border: 1px solid var(--dos-black);
+}
+
+.sprite-data-table {
+    margin: 0 auto;
+    width: 80%;
+}
+
+tr {
+    text-align: center;
+}
+
+tr:nth-child(odd) {
+    background-color: var(--dos-gray3);
+}
+
+tr:nth-child(even) {
+    background-color: var(--dos-gray2);
+}
+
+.settings-tool-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+}
+
+.pallete-tool-container {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.palette-color-inputs-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.grid-fill-horiz {
+    grid-column: -1/1;
+}
+
+#main-navbar a:hover {
+    background-color: var(--dos-gray1);
+}

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBSpriteEditor</title>
+    <link rel="stylesheet" href="./css/gbspriteeditor.css">
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <!-- grab VT323 font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <!-- grab open sans font -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <nav id="main-navbar">
+            <header class="doc-title-text">GBSpriteEditor</header>
+        </nav>
+
+        <div id="tools-left-container">
+            <div id="palette-settings" class="shadow">
+                <h2>Palette Settings</h2>
+                <div class="pallete-tool-container">
+                    <div class="palette-color-inputs-container">
+                        <label for="palette0">Color 0</label>
+                        <input type="color" name="palett0" id="palette0">
+                        <label for="palette1">Color 1</label>
+                        <input type="color" name="palette1" id="palette1">
+                        <label for="palette2">Color 2</label>
+                        <input type="color" name="palette2" id="palette2">
+                        <label for="palette3">Color 3</label>
+                        <input type="color" name="palette3" id="palette3">
+                    </div>
+
+                    <button id="exportPaletteButton" class="boxy-button grid-fill-horiz">Copy Palette (JSON)</button>
+                </div>
+            </div>
+            <div id="sprite-settings" class="shadow">
+                <h2 class="orangify">Settings</h2>
+                <div class="settings-tool-container">
+                    <button id="copyJSONButton" class="boxy-button">Copy Sprite (JSON)</button>
+                    <button id="copyASMButton" class="boxy-button">Copy Sprite (ASM)</button>
+                    <table class="sprite-data-table grid-fill-horiz">
+                        <thead>
+                            <th>Byte 0</th>
+                            <th>Byte 1</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="row0_byte0">FF</td>
+                                <td id="row0_byte1">FF</td>
+                            </tr>
+                            <tr>
+                                <td id="row1_byte0">FF</td>
+                                <td id="row1_byte1">FF</td>
+                            </tr>
+                            <tr>
+                                <td id="row2_byte0">FF</td>
+                                <td id="row2_byte1">FF</td>
+                            </tr>
+                            <tr>
+                                <td id="row3_byte0">FF</td>
+                                <td id="row3_byte1">FF</td>
+                            </tr>
+                            <tr>
+                                <td id="row4_byte0">FF</td>
+                                <td id="row4_byte1">FF</td>
+                            </tr>
+                            <tr>
+                                <td id="row5_byte0">FF</td>
+                                <td id="row5_byte1">FF</td>
+                            </tr>
+                            <tr>
+                                <td id="row6_byte0">FF</td>
+                                <td id="row6_byte1">FF</td>
+                            </tr>
+                            <tr>
+                                <td id="row7_byte0">FF</td>
+                                <td id="row7_byte1">FF</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button id="resetSpriteButton" class="boxy-button">Reset Sprite</button>
+                </div>
+            </div>
+            
+
+        </div>
+
+        <div id="tools-right-container">
+            <div id="about" class="shadow">
+                <h2 class="magentify">About</h2>
+                <p>GBSpriteEditor was an experiment in working with Unity from JavaScript. The export/tools settings
+                    control
+                    aspects of the WebGL exported scene (the computer). If your curious about the sprite editor and
+                    what's
+                    happening in Unity checkout the repo at: <a target="_blank"
+                        href="https://github.com/werkn/gbspriteeditor">github.com/werkn/gbspriteeditor</a></p>
+            </div>
+        </div>
+        
+        <section id="canvas-container">
+            
+            <canvas id="unity-canvas" width=320 height=522
+            style="width: 320px; height: 522px; background: #1A1A1A"></canvas>
+            <script src="Build/docs.loader.js"></script>
+            
+            <script>
+                let gbeditor = {};
+                gbeditor.defaultSpriteAsString = "FF 00 FF 00 FF 00 FF 00 FF 00 FF 00 FF 00 FF 00"; 
+                gbeditor.spriteAsString = gbeditor.defaultSpriteAsString;
+
+                //we have (under Plugins/browser_interop.jslib) a function that fires everytime we 
+                //update sprite data, this method captures that and updates our local table of sprite
+                //data 
+                let syncSpriteData = (spriteAsString) => {
+                    //update spriteAsString
+                    gbeditor.spriteAsString = spriteAsString;
+                    
+                    //spriteAsString is sent from our Unity script as space seperated values
+                    //so it looks like "FF FF FF ... FF"
+                    let spriteRows = spriteAsString.split(" ");
+
+                    //grab table and update sprite data per byte, per row
+                    for(let row = 0, currentByte = 0; row < 8; row++, currentByte+=2) {
+                        //console.log(spriteRows[row]);
+                        document.getElementById("row"+row+"_byte0").innerText = spriteRows[currentByte];
+                        document.getElementById("row"+row+"_byte1").innerText = spriteRows[currentByte+1];
+                    }
+
+                }
+
+                //Unity script to attach canvas/webgl build.
+                createUnityInstance(document.querySelector("#unity-canvas"), {
+                    dataUrl: "Build/docs.data.unityweb",
+                    frameworkUrl: "Build/docs.framework.js.unityweb",
+                    codeUrl: "Build/docs.wasm.unityweb",
+                    streamingAssetsUrl: "StreamingAssets",
+                    companyName: "werkncode.io",
+                    productName: "GBSpriteEditor",
+                    productVersion: "1.0",
+                    // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+                    // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+                }, 
+                (progress) => { /* do nothing but don't instant until done loading*/ }).then((unityInstance) => {
+                    window.unityInstance = unityInstance; //add unityInstance so we can access it
+                });
+
+
+                gbeditor.copyToClipboard = (text) => {
+                    window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
+                }
+
+                //grab palette color controls
+                gbeditor.palette0 = document.getElementById("palette0");
+                gbeditor.palette1 = document.getElementById("palette1");
+                gbeditor.palette2 = document.getElementById("palette2");
+                gbeditor.palette3 = document.getElementById("palette3");
+    
+                //add button references
+                gbeditor.exportPaletteButton = document.getElementById("exportPaletteButton");
+                gbeditor.copyPaletteJSONButton = document.getElementById("copyJSONButton");
+                gbeditor.copyPaletteASMButton = document.getElementById("copyASMButton");
+                gbeditor.resetSpriteButton = document.getElementById("resetSpriteButton");
+
+                //send palette updates into the Unity app
+                gbeditor.syncBrowserPalette = () => {
+                    unityInstance.SendMessage("State", "SyncBrowserPalette",
+                    document.getElementById("palette0").value + "," +
+                    document.getElementById("palette1").value + "," +
+                    document.getElementById("palette2").value + "," +
+                    document.getElementById("palette3").value);
+                }
+                
+                //add callbacks to sync canvas changes
+                gbeditor.palette0.onchange = () => { gbeditor.syncBrowserPalette(); }
+                gbeditor.palette1.onchange = () => { gbeditor.syncBrowserPalette(); }
+                gbeditor.palette2.onchange = () => { gbeditor.syncBrowserPalette(); }
+                gbeditor.palette3.onchange = () => { gbeditor.syncBrowserPalette(); }
+
+                //add button callbacks
+                gbeditor.exportPaletteButton.onclick = () => {
+                    gbeditor.copyToClipboard(JSON.stringify(
+                        {
+                            'palette0': gbeditor.palette0.value,
+                            'palette1': gbeditor.palette1.value,
+                            'palette2': gbeditor.palette2.value,
+                            'palette3': gbeditor.palette3.value
+                        }
+                    ));
+                }
+                
+                gbeditor.copyPaletteJSONButton.onclick = () => {
+                    gbeditor.copyToClipboard(JSON.stringify({"sprite": gbeditor.spriteAsString}));
+                }
+
+                gbeditor.copyPaletteASMButton.onclick = () => {
+                    //convert to ASM db format
+                    let spriteAsASM = "db " + gbeditor.spriteAsString.split(" ").map((currentValue, index, arr) => {
+                        if (index < arr.length-1) {
+                            //group output of bytes in twos
+                            if (index % 2 == 0) {
+                                return `$${currentValue},`
+                            } else {
+                                return `$${currentValue}, `
+                            }
+                        } else { 
+                            //don't append , on last value
+                            return `$${currentValue}`
+                        }
+                    }).join('');
+                    gbeditor.copyToClipboard(spriteAsASM);
+                }
+
+                gbeditor.resetSpriteButton.onclick = () => {
+                    unityInstance.SendMessage('State', 'ResetSprite'); 
+                    //reset spriteAsString
+                    gbeditor.spriteAsString = gbeditor.defaultSpriteAsString; 
+                    //reset table
+                    syncSpriteData(gbeditor.defaultSpriteAsString);
+                }
+
+            </script>
+        </section>
+
+        <footer id="footer-container">Copyright © Ryan Radford 2021</footer>
+
+    </div>
+
+</body>
+
+</html>
