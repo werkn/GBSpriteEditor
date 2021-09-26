@@ -90,31 +90,33 @@
                     <button id="resetSpriteButton" class="boxy-button">Reset Sprite</button>
                 </div>
             </div>
-            
+
 
         </div>
 
         <div id="tools-right-container">
             <div id="about" class="shadow">
                 <h2 class="magentify">About</h2>
-                <p>GBSpriteEditor was an experiment in working with Unity from JavaScript. The export/tools settings
-                    control
-                    aspects of the WebGL exported scene (the computer). If your curious about the sprite editor and
+                <p>The tool can be used to make graphics for the GameBoy DMG and exports to both JSON and GZ80 Assembly
+                    (if your using a tool like RGBDS). It's not meant for editing all of your graphics but as a tool to
+                    learn the 2BPP (2 Bits Per Pixel) graphic format which can be a bit tricky to wrap your head around
+                    at first. It pairs well with my tutorial on <a href="">setting up a GameBoy Development Kit</a>.</p>
+                <p>If your curious about the sprite editor and
                     what's
                     happening in Unity checkout the repo at: <a target="_blank"
                         href="https://github.com/werkn/gbspriteeditor">github.com/werkn/gbspriteeditor</a></p>
             </div>
         </div>
-        
+
         <section id="canvas-container">
-            
+
             <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}}
-            style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
+                style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
             <script src="Build/{{{ LOADER_FILENAME }}}"></script>
-            
+
             <script>
                 let gbeditor = {};
-                gbeditor.defaultSpriteAsString = "FF 00 FF 00 FF 00 FF 00 FF 00 FF 00 FF 00 FF 00"; 
+                gbeditor.defaultSpriteAsString = "FF 00 FF 00 FF 00 FF 00 FF 00 FF 00 FF 00 FF 00";
                 gbeditor.spriteAsString = gbeditor.defaultSpriteAsString;
 
                 //we have (under Plugins/browser_interop.jslib) a function that fires everytime we 
@@ -123,16 +125,16 @@
                 let syncSpriteData = (spriteAsString) => {
                     //update spriteAsString
                     gbeditor.spriteAsString = spriteAsString;
-                    
+
                     //spriteAsString is sent from our Unity script as space seperated values
                     //so it looks like "FF FF FF ... FF"
                     let spriteRows = spriteAsString.split(" ");
 
                     //grab table and update sprite data per byte, per row
-                    for(let row = 0, currentByte = 0; row < 8; row++, currentByte+=2) {
+                    for (let row = 0, currentByte = 0; row < 8; row++, currentByte += 2) {
                         //console.log(spriteRows[row]);
-                        document.getElementById("row"+row+"_byte0").innerText = spriteRows[currentByte];
-                        document.getElementById("row"+row+"_byte1").innerText = spriteRows[currentByte+1];
+                        document.getElementById("row" + row + "_byte0").innerText = spriteRows[currentByte];
+                        document.getElementById("row" + row + "_byte1").innerText = spriteRows[currentByte + 1];
                     }
 
                 }
@@ -154,10 +156,10 @@
                     productVersion: "{{{ PRODUCT_VERSION }}}",
                     // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
                     // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-                }, 
-                (progress) => { /* do nothing but don't instant until done loading*/ }).then((unityInstance) => {
-                    window.unityInstance = unityInstance; //add unityInstance so we can access it
-                });
+                },
+                    (progress) => { /* do nothing but don't instant until done loading*/ }).then((unityInstance) => {
+                        window.unityInstance = unityInstance; //add unityInstance so we can access it
+                    });
 
 
                 gbeditor.copyToClipboard = (text) => {
@@ -169,7 +171,7 @@
                 gbeditor.palette1 = document.getElementById("palette1");
                 gbeditor.palette2 = document.getElementById("palette2");
                 gbeditor.palette3 = document.getElementById("palette3");
-    
+
                 //add button references
                 gbeditor.exportPaletteButton = document.getElementById("exportPaletteButton");
                 gbeditor.copyPaletteJSONButton = document.getElementById("copyJSONButton");
@@ -179,12 +181,12 @@
                 //send palette updates into the Unity app
                 gbeditor.syncBrowserPalette = () => {
                     unityInstance.SendMessage("State", "SyncBrowserPalette",
-                    document.getElementById("palette0").value + "," +
-                    document.getElementById("palette1").value + "," +
-                    document.getElementById("palette2").value + "," +
-                    document.getElementById("palette3").value);
+                        document.getElementById("palette0").value + "," +
+                        document.getElementById("palette1").value + "," +
+                        document.getElementById("palette2").value + "," +
+                        document.getElementById("palette3").value);
                 }
-                
+
                 //add callbacks to sync canvas changes
                 gbeditor.palette0.onchange = () => { gbeditor.syncBrowserPalette(); }
                 gbeditor.palette1.onchange = () => { gbeditor.syncBrowserPalette(); }
@@ -202,22 +204,22 @@
                         }
                     ));
                 }
-                
+
                 gbeditor.copyPaletteJSONButton.onclick = () => {
-                    gbeditor.copyToClipboard(JSON.stringify({"sprite": gbeditor.spriteAsString}));
+                    gbeditor.copyToClipboard(JSON.stringify({ "sprite": gbeditor.spriteAsString }));
                 }
 
                 gbeditor.copyPaletteASMButton.onclick = () => {
                     //convert to ASM db format
                     let spriteAsASM = "db " + gbeditor.spriteAsString.split(" ").map((currentValue, index, arr) => {
-                        if (index < arr.length-1) {
+                        if (index < arr.length - 1) {
                             //group output of bytes in twos
                             if (index % 2 == 0) {
                                 return `$${currentValue},`
                             } else {
                                 return `$${currentValue}, `
                             }
-                        } else { 
+                        } else {
                             //don't append , on last value
                             return `$${currentValue}`
                         }
@@ -226,9 +228,9 @@
                 }
 
                 gbeditor.resetSpriteButton.onclick = () => {
-                    unityInstance.SendMessage('State', 'ResetSprite'); 
+                    unityInstance.SendMessage('State', 'ResetSprite');
                     //reset spriteAsString
-                    gbeditor.spriteAsString = gbeditor.defaultSpriteAsString; 
+                    gbeditor.spriteAsString = gbeditor.defaultSpriteAsString;
                     //reset table
                     syncSpriteData(gbeditor.defaultSpriteAsString);
                 }
