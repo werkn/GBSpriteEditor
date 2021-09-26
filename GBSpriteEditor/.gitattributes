@@ -1,0 +1,2 @@
+# project langauge is set to HTML but actually C#, override linguist
+*.html linguist-language=C#
